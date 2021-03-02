@@ -4,4 +4,4 @@ A tutorial for enabling Drag & Drop capabilites to any Web Application.
 
 # Test Locally
 
-Clone the repository and open `index.html`
+Clone the repository and open `dragdrop.html`
