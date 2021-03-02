@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Drag and Drop</title>
+    <style>
+      #container {
+      	margin-left: 100px;
+      	margin-top: 30px;
+      }
+      h2 {
+      	margin-left: 50px;
+      }
+      #dest {
+          position: relative;
+        background: lightCyan;
+        border: 1px solid #444;
+        border-radius: 50px;
+        width: 640px;
+        height: 480px;
+        padding: 1rem;
+      }
+      #trash{
+          position: absolute;
+          bottom: 1rem;
+          right: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+  	<div id='container'>
+  	  <h2>Drag & Drop Demo</h2>
+      <div id='dest' ondrop="drop(event)" ondragover="allowDrop(event)"  >
+        <img id='trash' src='trashlit.png' ondrop="trashdrop(event)" ondragover="allowDrop(event)"
+        ondragenter="trashenter(event)" ondragleave="trashleave(event)">
+      </div>
+      <p>
+        <img id='source1' src='cube.png' draggable="true" ondragstart="drag(event)">
+        <img id='source2' src='Dice.png' draggable="true" ondragstart="drag(event)">
+        <img id='source3' src='ball.png' draggable="true" ondragstart="drag(event)">
+      </p>
+      <p>Dragging the image to copy it into the above div element.<br>
+      To move, hold the 'Shift' key while dragging.</p>
+    </div>
+
+    <script>
+        var i = 0 ;
+        function trashleave(event){
+            document.querySelector("#trash").src='trashlit.png';
+        }
+        function trashenter(event){
+            var id = event.dataTransfer.getData("text/plain");
+            console.log(id);
+            document.querySelector("#trash").src='trash.png';
+
+        }
+
+        function trashdrop(event){
+            var id = event.dataTransfer.getData("t");
+            if(document.getElementById(id)){
+                document.querySelector("#trash").src='trashlit.png';
+                document.getElementById(id).remove();
+                event.stopPropagation();
+                playTrashEffectAudio();
+            } else{
+                event.stopPropagation();
+                document.querySelector("#trash").src='trashlit.png';
+                playRejectEffectAudio();
+            }
+
+        }
+
+        function playDropEffectAudio(){
+            var audio = new Audio("drop.wav");
+            audio.play();
+        }
+
+        function playTrashEffectAudio(){
+            var audio = new Audio("trash.wav");
+            audio.play();
+        }
+
+        function playRejectEffectAudio(){
+            var audio = new Audio("reject.wav");
+            audio.play();
+        }
+        function drop(event){
+            event.preventDefault();
+            var id = event.dataTransfer.getData("text/plain");
+            if(id){
+                var img = document.createElement("img");
+                img.src = document.getElementById(id).src;
+                event.target.appendChild(img);
+                img.id = "id-"+i;
+                i++;
+                img.ondragstart=function(event){
+                    event.dataTransfer.setData("t", event.target.id);
+                }
+                playDropEffectAudio();
+                if(event.shiftKey){
+                    var del = document.getElementById(id)
+                    document.querySelector("p").removeChild(del);
+                }
+            } else {
+                playRejectEffectAudio();
+            }
+        }
+
+        function allowDrop(event){
+            event.preventDefault();
+        }
+        function drag(event) {
+            event.dataTransfer.setData("text/plain", event.target.id);
+        }
+    </script>
+  </body>
+</html>
